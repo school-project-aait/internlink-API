@@ -11,16 +11,16 @@
 | Meron Sisay     | UGR/0752/15 |
 
 
-#Two Business Features with CRUD:
+# **Two Business Features with CRUD**:
 
-##Internship Listings: Admin can Create, Read, Update, Delete internship opportunities.
+## Internship Listings: Admin can Create, Read, Update, Delete internship opportunities.
 
-##Student Applications: Students can apply, view, update, or delete their applications.
+## Student Applications: Students can apply, view, update, or delete their applications.
 
-#Authentication and Authorization:
-#User- Student should create and login to their account.
+# **Authentication and Authorization**:
+# User- Student should create and login to their account.
       -Admins should login to their account.
-#Admins are the only one that create,update,remove internship posts. While students can apply, track their status, and witdraw their application. 
+# Admins are the only one that create,update,remove internship posts. While students can apply, track their status, and witdraw their application. 
 
 
  
