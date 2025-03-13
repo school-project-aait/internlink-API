@@ -19,7 +19,7 @@
 
 ## **Authentication and Authorization**:
 ### User- Student should create and login to their account.
-      -Admins should login to their account.
+###      -Admins should login to their account.
 ### Admins are the only one that create,update,remove internship posts. While students can apply, track their status, and witdraw their application. 
 
 
