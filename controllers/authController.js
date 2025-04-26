@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 
 exports.signup = async (req, res) => {
@@ -33,6 +34,7 @@ exports.signup = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   };
+// login function
 
   exports.login = async (req, res) => {
     try {
@@ -42,16 +44,46 @@ exports.signup = async (req, res) => {
       const validPassword = await bcrypt.compare(req.body.password, user.password_hash);
       if (!validPassword) return res.status(401).json({ error: "Invalid credentials" });
   
+      // Generate JWT
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+      );
+  
       // Update last login
       await userModel.updateUser(user.id, { last_login: new Date() });
   
       const { password_hash, ...safeUser } = user;
       res.json({
         message: "Login successful",
-        user: safeUser
+        user: safeUser,
+        token: token
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   };
+
+
+  // exports.login = async (req, res) => {
+  //   try {
+  //     const user = await userModel.findUserByEmail(req.body.email);
+  //     if (!user) return res.status(401).json({ error: "Invalid credentials" });
+  
+  //     const validPassword = await bcrypt.compare(req.body.password, user.password_hash);
+  //     if (!validPassword) return res.status(401).json({ error: "Invalid credentials" });
+  
+  //     // Update last login
+  //     await userModel.updateUser(user.id, { last_login: new Date() });
+  
+  //     const { password_hash, ...safeUser } = user;
+  //     res.json({
+  //       message: "Login successful",
+  //       user: safeUser
+  //     });
+  //   } catch (error) {
+  //     res.status(500).json({ error: error.message });
+  //   }
+  // };
   
