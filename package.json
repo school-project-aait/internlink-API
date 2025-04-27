@@ -1,13 +1,22 @@
 {
   "name": "intern-backend",
   "version": "1.0.0",
+  "description": "| Name            | ID          |\r | --------------- | ----------- |\r | Bemnet Asseged  | UGR/2591/15 |\r | Hintsete Hilawe | UGR/6054/15 |\r | Mahider Nardos  | UGR/4445/15 |\r | Meklit Shiferaw | UGR/5036/15 |\r | Meron Sisay     | UGR/0752/15 |",
+  "homepage": "https://github.com/school-project-aait/internlink-API#readme",
+  "bugs": {
+    "url": "https://github.com/school-project-aait/internlink-API/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/school-project-aait/internlink-API.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^2.2.0",
