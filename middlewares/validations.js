@@ -41,17 +41,22 @@ exports.validateSignup = [
 
 
 exports.validateInternship = (req, res, next) => {
-  const { title, company_id, category_id, deadline } = req.body;
+  const { title, company_name, category_id, deadline } = req.body;
   
-  if (!title || !company_id || !category_id || !deadline) {
+  if (!title || !company_name || !category_id || !deadline) {
     return res.status(400).json({ 
       success: false, 
-      message: 'Title, company, category, and deadline are required' 
+      message: 'Title, company name, category, and deadline are required' 
     });
   }
   
-  // You can add more specific validations here
-  // For example, check if deadline is in the future
+  // Additional validation can be added here
+  if (typeof company_name !== 'string' || company_name.trim().length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Company name must be a non-empty string'
+    });
+  }
   
   next();
 };

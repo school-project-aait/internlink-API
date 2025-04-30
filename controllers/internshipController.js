@@ -1,30 +1,25 @@
-const Internship = require('../models/Internship');
-
+const Internship = require('../models/Internship'); 
 exports.createInternship = async (req, res) => {
   try {
-    // Get user ID from the authenticated request
-    const created_by = req.user.id; // This comes from your authenticate middleware
+    const created_by = req.user.id;
+    const { title, description, deadline, company_name, category_id } = req.body;
     
-    const { title, description, deadline, company_id, category_id } = req.body;
-    
-    // Basic validation
-    if (!title || !company_id || !category_id || !deadline) {
+    if (!title || !company_name || !category_id || !deadline) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Title, company, category, and deadline are required' 
+        message: 'Title, company name, category, and deadline are required' 
       });
     }
-    
-    const internshipData = {
+
+    const internshipId = await Internship.createInternship({
       title,
-      description: description || '',
+      description,
       deadline,
-      company_id,
+      company_name,
       category_id,
-      created_by // Add the user ID here
-    };
-    
-    const internshipId = await Internship.createInternship(internshipData);
+      created_by
+    });
+
     const newInternship = await Internship.getInternshipById(internshipId);
     
     res.status(201).json({
@@ -54,20 +49,38 @@ exports.getAllInternships = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+exports.getInternshipById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const internship = await Internship.getInternshipById(id);
+
+    if (!internship) {
+      return res.status(404).json({
+        success: false,
+        message: 'Internship not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: internship
+    });
+  } catch (error) {
+    console.error('Error fetching internship by ID:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+
 exports.updateInternship = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
-
-    // Verify internship exists and belongs to the admin
-    const existingInternship = await Internship.getInternshipById(id);
-    if (!existingInternship) {
-      return res.status(404).json({ success: false, message: 'Internship not found' });
-    }
-
-    if (existingInternship.created_by !== req.user.id) {
-      return res.status(403).json({ success: false, message: 'Not authorized to update this internship' });
-    }
 
     const isUpdated = await Internship.updateInternship(id, updateData);
     
@@ -90,32 +103,17 @@ exports.updateInternship = async (req, res) => {
     });
   }
 };
+
 exports.deleteInternship = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Verify internship exists and belongs to the admin
-    const existingInternship = await Internship.getInternshipById(id);
-    if (!existingInternship) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Internship not found' 
-      });
-    }
-
-    if (existingInternship.created_by !== req.user.id) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Not authorized to delete this internship' 
-      });
-    }
-
     const isDeleted = await Internship.deleteInternship(id);
     
     if (!isDeleted) {
-      return res.status(400).json({ 
+      return res.status(404).json({ 
         success: false, 
-        message: 'Failed to delete internship' 
+        message: 'Internship not found' 
       });
     }
     
