@@ -40,57 +40,18 @@ exports.validateSignup = [
 ];
 
 
-
-exports.validateInternship = [
-  body("title")
-    .notEmpty()
-    .withMessage("Title is required")
-    .isLength({ max: 255 })
-    .withMessage("Title must not exceed 255 characters"),
-
-  body("description")
-    .optional()
-    .isString()
-    .withMessage("Description must be a string"),
-
-  body("deadline")
-    .optional()
-    .isISO8601({ strict: true })
-    .withMessage("Invalid date format for deadline. Use YYYY-MM-DD"),
-
-  body("is_active")
-    .optional()
-    .isBoolean()
-    .withMessage("is_active must be a boolean value (true/false)"),
-
-  body("status")
-    .optional()
-    .isIn(["open", "closed"])
-    .withMessage("Status must be either 'open' or 'closed'"),
-
-  body("company_id")
-    .notEmpty()
-    .withMessage("Company ID is required")
-    .isInt()
-    .withMessage("Company ID must be an integer"),
-
-  body("category_id")
-    .notEmpty()
-    .withMessage("Category ID is required")
-    .isInt()
-    .withMessage("Category ID must be an integer"),
-
-  body("created_by")
-    .notEmpty()
-    .withMessage("Created By (user ID) is required")
-    .isInt()
-    .withMessage("Created By must be an integer"),
-
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-];
+exports.validateInternship = (req, res, next) => {
+  const { title, company_id, category_id, deadline } = req.body;
+  
+  if (!title || !company_id || !category_id || !deadline) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Title, company, category, and deadline are required' 
+    });
+  }
+  
+  // You can add more specific validations here
+  // For example, check if deadline is in the future
+  
+  next();
+};

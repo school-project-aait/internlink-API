@@ -1,12 +1,11 @@
+// This is a middleware factory that returns a middleware function
 const authorize = (requiredRole) => {
-    return (req, res, next) => {
-      // Ensure the user is authenticated and their role matches the required one
-      if (req.user.role !== requiredRole) {
-        return res.status(403).json({ error: "You do not have permission to access this resource" });
-      }
-      next();  // Proceed to the next middleware/route handler
-    };
+  return (req, res, next) => {
+    if (req.user?.role !== requiredRole) {
+      return res.status(403).json({ error: `Access forbidden. ${requiredRole} role required` });
+    }
+    next();
   };
-  
-  module.exports = authorize;
-  
+};
+
+module.exports = authorize; // Export the factory function directly

@@ -1,39 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const internshipController = require('../controllers/internshipController');
-const authenticate = require('../middlewares/authenticate'); // ⬅️ Import authenticate
-const authorize = require('../middlewares/authorize'); // ⬅️ Import authorize
-const { validateInternship } = require('../middlewares/validations'); // ⬅️ Import validation
+const dropdownController = require('../controllers/dropdownController');
+const authenticate = require('../middlewares/authenticate'); // Now matches export
+const authorize = require('../middlewares/authorize'); 
+const { validateInternship } = require('../middlewares/validations');
 
-// CREATE Internship (Admin only, with validation)
-router.post(
-  '/',
-  authenticate, 
-  authorize('admin'), 
-  validateInternship, 
-  internshipController.createInternship
-);
+// Get dropdown data (public)
+router.get('/dropdown-data', dropdownController.getDropdownData);
+router.get('/companies/:categoryId', dropdownController.getCompaniesByCategory);
 
-// READ All Internships (Public, no auth needed)
-router.get('/', internshipController.getAllInternships);
-
-// READ Single Internship by ID (Public, no auth needed)
-router.get('/:id', internshipController.getInternshipById);
-
-// UPDATE Internship (Admin only, with validation)
-router.patch(
-  '/:id', 
-  authenticate, 
-  authorize('admin'), 
-  validateInternship, 
+// Internship routes (protected, admin only)
+router.post('/', authenticate, authorize('admin'), validateInternship, internshipController.createInternship);
+router.get('/', authenticate, internshipController.getAllInternships);
+router.put('/:id', 
+  authenticate,
+  authorize('admin'),
   internshipController.updateInternship
 );
-
-// DELETE Internship (Admin only)
-router.delete(
-  '/:id', 
-  authenticate, 
-  authorize('admin'), 
+router.delete('/:id', 
+  authenticate,
+  authorize('admin'),
   internshipController.deleteInternship
 );
 
