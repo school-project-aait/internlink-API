@@ -1,14 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
-const authenticate = require('../middlewares/authenticate'); // Now matches export
-const authorize = require('../middlewares/authorize');
+const authenticate = require('../middlewares/authenticate');
 
-// Example route - adjust according to your actual routes
-router.put('/:id', 
-  authenticate, 
-  authorize('admin'), 
-  userController.updateUser
-);
+// Get current user's profile
+router.get('/profile', authenticate, userController.getProfile);
+
+// Update user's OWN account
+router.put('/:id', authenticate, userController.updateUser);
+
+// Delete user's OWN account 
+router.delete('/:id', authenticate, userController.deleteUser);
 
 module.exports = router;

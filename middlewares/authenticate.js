@@ -1,9 +1,9 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const JWT_SECRET_KEY = process.env.JWT_SECRET;
 
 const authenticate = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+
   if (!token) {
     return res.status(401).json({ error: "Authentication required" });
   }
@@ -11,14 +11,14 @@ const authenticate = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET_KEY);
     
-    // Map the token fields to req.user
+    // Standardized user object structure
     req.user = {
-      id: decoded.userId,  // Important: Use decoded.userId here
+      id: decoded.userId || decoded.id, // Handles both formats
       email: decoded.email,
       role: decoded.role
     };
-    
-    // Debug log (you can remove later)
+
+    // Debug log (can be removed in production)
     console.log('Authenticated user:', req.user);
     
     next();
@@ -28,4 +28,4 @@ const authenticate = (req, res, next) => {
   }
 };
 
-module.exports = authenticate
+module.exports = authenticate;
