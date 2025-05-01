@@ -39,35 +39,23 @@ exports.validateSignup = [
 ];
 
 
-
-
-
-
-
-
-
-// const { body, validationResult } = require("express-validator");
-// const bcrypt = require("bcrypt");
-
-// exports.validateSignup = [
-//   body("email").isEmail().normalizeEmail(),
-//   body("password")
-//     .isLength({ min: 8 })
-//     .withMessage("Password must be at least 8 characters"),
-//   body("confirmPassword").custom((value, { req }) => {
-//     if (value !== req.body.password) {
-//       throw new Error("Passwords do not match");
-//     }
-//     return true;
-//   }),
-//   body("birth_date")
-//     .isDate({ format: "YYYY-MM-DD" })
-//     .withMessage("Invalid date format. Use YYYY-MM-DD"),
-//   (req, res, next) => {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({ errors: errors.array() });
-//     }
-//     next();
-//   }
-// ];
+exports.validateInternship = (req, res, next) => {
+  const { title, company_name, category_id, deadline } = req.body;
+  
+  if (!title || !company_name || !category_id || !deadline) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Title, company name, category, and deadline are required' 
+    });
+  }
+  
+  // Additional validation can be added here
+  if (typeof company_name !== 'string' || company_name.trim().length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Company name must be a non-empty string'
+    });
+  }
+  
+  next();
+};
