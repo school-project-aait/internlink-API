@@ -1,13 +1,30 @@
 const db = require("../config/db");
 
 module.exports = {
-  findUserByEmail: (email) => {
+  // fetch the user for profile
+  getUserById: (id) => {
     return new Promise((resolve, reject) => {
-      db.query("SELECT * FROM users WHERE email = ?", [email], 
+      db.query(
+        "SELECT id, email, name, birth_date, role FROM users WHERE id = ?",
+        [id],
         (err, results) => {
           if (err) reject(err);
           resolve(results[0]);
-        });
+        }
+      );
+    });
+  },
+
+  findUserByEmail: (email) => {
+    return new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM users WHERE email = ?",
+        [email],
+        (err, results) => {
+          if (err) reject(err);
+          resolve(results[0]);
+        }
+      );
     });
   },
 
@@ -22,20 +39,23 @@ module.exports = {
 
   updateUser: (id, userData) => {
     return new Promise((resolve, reject) => {
-      db.query("UPDATE users SET ? WHERE id = ?", [userData, id], 
+      db.query(
+        "UPDATE users SET ? WHERE id = ?",
+        [userData, id],
         (err, results) => {
           if (err) reject(err);
           resolve(results);
-        });
+        }
+      );
     });
   },
   deleteUser: (id) => {
     return new Promise((resolve, reject) => {
       console.log("Deleting user with ID:", id);
-      
+
       // Ensure id is treated as a number
       const userId = parseInt(id, 10);
-      
+
       // Simple query without backticks
       db.query("DELETE FROM users WHERE id = ?", [userId], (err, results) => {
         if (err) {
@@ -46,11 +66,11 @@ module.exports = {
         }
       });
     });
-  }
+  },
 
   // deleteUser: (id) => {
   //   return new Promise((resolve, reject) => {
-  //     console.log("Deleting user with ID:", id); 
+  //     console.log("Deleting user with ID:", id);
   //     db.query("DELETE FROM `users` WHERE id = ?", [id], (err, results) => {
   //       if (err) reject(err);
   //       resolve(results);
