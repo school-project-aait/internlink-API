@@ -82,10 +82,21 @@ exports.updateInternship = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
+    // Validate required fields if category is being updated
+    if (updateData.category_id && !updateData.company_name) {
+      return res.status(400).json({
+        success: false,
+        message: 'Must provide company_name when changing category_id'
+      });
+    }
+
     const isUpdated = await Internship.updateInternship(id, updateData);
     
     if (!isUpdated) {
-      return res.status(400).json({ success: false, message: 'No valid fields to update' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Internship not found or no changes made' 
+      });
     }
 
     const updatedInternship = await Internship.getInternshipById(id);
@@ -99,7 +110,9 @@ exports.updateInternship = async (req, res) => {
     console.error('Update error:', error);
     res.status(500).json({ 
       success: false, 
-      message: error.message || 'Server error' 
+      message: error.message.includes('cannot be null') 
+        ? 'Company updates require maintaining category association' 
+        : error.message || 'Server error'
     });
   }
 };

@@ -69,9 +69,8 @@ const Internship = {
       });
     });
   },
-
-  getInternshipById: (id) => {
-    return new Promise((resolve, reject) => {
+  getInternshipById: async (id) => {
+    try {
       const sql = `
         SELECT 
           i.internship_id,
@@ -94,76 +93,76 @@ const Internship = {
         JOIN users u ON i.created_by = u.id
         WHERE i.internship_id = ?
       `;
-      con.query(sql, [id], (err, result) => {
-        if (err) {
-          console.error(`Error fetching internship ${id}:`, err);
-          reject(err);
-        } else {
-          resolve(result[0] || null);
-        }
-      });
-    });
+      const [result] = await con.promise().query(sql, [id]);
+      return result[0] || null;
+    } catch (err) {
+      console.error(`Error fetching internship ${id}:`, err);
+      throw err;
+    }
   },
 
   updateInternship: (id, data) => {
     return new Promise((resolve, reject) => {
-      // Handle company update if company_name is provided
-      const handleCompany = (callback) => {
-        if (!data.company_name) return callback(null, null);
-        
-        const companySql = `
-          INSERT INTO companies (name, category_id) 
-          VALUES (?, ?)
-          ON DUPLICATE KEY UPDATE company_id=LAST_INSERT_ID(company_id)
-        `;
-        con.query(companySql, [data.company_name, data.category_id], (err, result) => {
-          if (err) return callback(err);
-          callback(null, result.insertId);
-        });
-      };
-
-      handleCompany((err, companyId) => {
-        if (err) return reject(err);
-
-        // Prepare fields for update
-        const fields = [];
-        const values = [];
-        
-        const allowedFields = [
-          'title', 'description', 'deadline', 'is_active', 
-          'status', 'category_id'
-        ];
-        
-        allowedFields.forEach(field => {
-          if (data[field] !== undefined) {
-            fields.push(`${field} = ?`);
-            values.push(data[field]);
+      // First get the existing internship to preserve category_id
+      con.query(
+        'SELECT category_id FROM internships WHERE internship_id = ?', 
+        [id], 
+        async (err, [existingInternship]) => {
+          if (err) return reject(err);
+          if (!existingInternship) return reject(new Error('Internship not found'));
+  
+          // Handle company update if company_name is provided
+          let companyId = null;
+          if (data.company_name) {
+            try {
+              const [companyResult] = await con.promise().query(
+                `INSERT INTO companies (name, category_id) 
+                 VALUES (?, ?)
+                 ON DUPLICATE KEY UPDATE company_id=LAST_INSERT_ID(company_id)`,
+                [data.company_name, existingInternship.category_id] // Use existing category_id
+              );
+              companyId = companyResult.insertId;
+            } catch (error) {
+              return reject(error);
+            }
           }
-        });
-
-        // Add company_id if we have it
-        if (companyId !== null) {
-          fields.push('company_id = ?');
-          values.push(companyId);
+  
+          // Prepare fields for update
+          const fields = [];
+          const values = [];
+          
+          const allowedFields = [
+            'title', 'description', 'deadline', 'is_active', 
+            'status', 'category_id' // Can still update category if needed
+          ];
+          
+          allowedFields.forEach(field => {
+            if (data[field] !== undefined) {
+              fields.push(`${field} = ?`);
+              values.push(data[field]);
+            }
+          });
+  
+          // Add company_id if we have it
+          if (companyId !== null) {
+            fields.push('company_id = ?');
+            values.push(companyId);
+          }
+          
+          if (fields.length === 0) {
+            return reject(new Error('No valid fields provided for update'));
+          }
+          
+          values.push(id);
+          
+          const sql = `UPDATE internships SET ${fields.join(', ')} WHERE internship_id = ?`;
+          
+          con.query(sql, values, (err, result) => {
+            if (err) reject(err);
+            else resolve(result.affectedRows > 0);
+          });
         }
-        
-        if (fields.length === 0) {
-          return reject(new Error('No valid fields provided for update'));
-        }
-        
-        values.push(id);
-        
-        const sql = `
-          UPDATE internships 
-          SET ${fields.join(', ')}
-          WHERE internship_id = ?
-        `;
-        
-        con.query(sql, values, (err, result) => {
-          if (err) reject(err);
-          else resolve(result.affectedRows > 0);
-        });
-      });
+      );
     });
   },
 

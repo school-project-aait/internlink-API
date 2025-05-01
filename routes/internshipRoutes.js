@@ -19,7 +19,11 @@ router.post(
 );
 
 router.get('/', authenticate, internshipController.getAllInternships);
-
+router.get(
+  '/:id',
+  authenticate,
+  internshipController.getInternshipById
+);
 router.put(
   '/:id',
   authenticate,
