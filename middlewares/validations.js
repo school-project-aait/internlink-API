@@ -59,3 +59,31 @@ exports.validateInternship = (req, res, next) => {
   
   next();
 };
+exports.validateApplication = (applicationData) => {
+  const errors = {};
+  
+  if (!applicationData.university?.trim()) {
+    errors.university = "University name is required";
+  }
+  
+  if (!applicationData.degree?.trim()) {
+    errors.degree = "Degree program is required";
+  }
+  
+  if (!applicationData.graduation_year) {
+    errors.graduation_year = "Graduation year is required";
+  } else if (applicationData.graduation_year < 2000 || applicationData.graduation_year > 2030) {
+    errors.graduation_year = "Enter a valid year between 2000-2030";
+  }
+  
+if (applicationData.linkdIn?.trim() && !applicationData.linkdIn.includes('linkedin.com')) {
+  errors.linkdIn = "Enter a valid LinkedIn URL";
+}
+
+  
+  if (!applicationData.resume_id) {
+    errors.resume_id = "Resume is required";
+  }
+
+  return errors;
+};
