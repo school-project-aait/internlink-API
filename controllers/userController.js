@@ -27,7 +27,7 @@ exports.deleteUser = async (req, res) => {
     console.log("req.user:", req.user);
     console.log("userId:", userId);
 
-    if (req.user && req.user.userId !== userId) {
+    if (req.user.id  !== userId) {
       return res
         .status(403)
         .json({ message: "Unauthorized to delete this user" });
@@ -60,7 +60,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await userModel.getUserById(req.user.userId); // assuming JWT token sets userId
+    const user = await userModel.getUserById(req.user.id); // assuming JWT token sets userId
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

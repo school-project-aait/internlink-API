@@ -2,7 +2,7 @@ const db = require("../config/db");
 
 module.exports = {
   // fetch the user for profile
-  getUserById: (id) => {
+  findUserById: (id) => {
     return new Promise((resolve, reject) => {
       db.query(
         "SELECT id, email, name, birth_date, role FROM users WHERE id = ?",
@@ -27,6 +27,8 @@ module.exports = {
       );
     });
   },
+   
+   
 
   createUser: (userData) => {
     return new Promise((resolve, reject) => {
@@ -54,10 +56,10 @@ module.exports = {
       console.log("Deleting user with ID:", id);
 
       // Ensure id is treated as a number
-      const userId = parseInt(id, 10);
+      // const userId = parseInt(id, 10);
 
       // Simple query without backticks
-      db.query("DELETE FROM users WHERE id = ?", [userId], (err, results) => {
+      db.query("DELETE FROM users WHERE id = ?", [id], (err, results) => {
         if (err) {
           console.error("SQL Error:", err);
           reject(err);
