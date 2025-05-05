@@ -7,16 +7,21 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const internshipRoutes = require("./routes/internshipRoutes");
+const applicationRoutes = require("./routes/applicationRoutes");
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+ 
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/internships", internshipRoutes);
+app.use("/api/applications", applicationRoutes);
+ 
 
+ 
 // Test endpoint
 app.get("/", (req, res) => {
   res.send("🎉 Backend is working!");
