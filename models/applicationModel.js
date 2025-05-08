@@ -152,5 +152,20 @@ module.exports = {
         resolve(results.length > 0);
       });
     });
-  }
-};
+  },
+  // meron's 
+   // Change application status (admin use)
+   updateStatus: (applicationId, status) => {
+    return new Promise((resolve, reject) => {
+      const sql = `UPDATE applications SET status = ? WHERE application_id = ?`;
+      db.query(sql, [status, applicationId], (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+  },
+
+}
+
+
+
