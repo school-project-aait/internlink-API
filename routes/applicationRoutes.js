@@ -3,6 +3,7 @@ const router = express.Router();
 const applicationController = require('../controllers/applicationController');
 const authenticate = require('../middlewares/authenticate');
 const upload = require('../middlewares/upload');
+const authorize = require('../middlewares/authorize');
 // Student application endpoints
 // router.post('/', authenticate, applicationController.createApplication);
 router.get('/', authenticate, applicationController.getUserApplications);
@@ -13,6 +14,15 @@ router.get('/:id', authenticate, applicationController.getSingleApplication);
 
 // Apply `upload.single('resume')` to handle file upload
 router.post('/', authenticate, upload.single('resume'), applicationController.createApplication);
+
+ 
+// Admin application endpoints
+router.patch(
+    "/:id/status",
+    authenticate,
+    authorize('admin'),
+    applicationController.changeApplicationStatus
+  );
 
 
 module.exports = router;

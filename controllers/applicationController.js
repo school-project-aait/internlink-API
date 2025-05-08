@@ -75,206 +75,6 @@ exports.createApplication = async (req, res) => {
 };
 
 
-// exports.createApplication = async (req, res) => {
-//   try {
-//     const {
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn
-//     } = req.body;
-
-//     const resumeFile = req.file;
-
-//     // Validate fields
-//     const errors = validateApplication({
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn
-//     });
-
-//     if (!resumeFile) {
-//       errors.resume = "Resume file is required";
-//     }
-
-//     if (Object.keys(errors).length > 0) {
-//       return res.status(400).json({ errors });
-//     }
-
-//     // Check duplicate application
-//     const alreadyApplied = await applicationModel.checkExistingApplication(
-//       req.user.id,
-//       internship_id
-//     );
-//     if (alreadyApplied) {
-//       return res.status(409).json({
-//         error: "You've already applied to this internship"
-//       });
-//     }
-
-//     // Save resume to DB
-//     const resumeData = {
-//       user_id: req.user.id,
-//       orginal_filename: resumeFile.originalname,
-//       file_extension: path.extname(resumeFile.originalname),
-//       attachment_path: resumeFile.path
-//     };
-
-//     const resumeId = await resumeModel.insertResume(resumeData);
-
-//     // Now insert application
-//     const applicationId = await applicationModel.createApplication({
-//       user_id: req.user.id,
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn,
-//       resume_id: resumeId
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       applicationId,
-//       message: "Application submitted successfully"
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       error: error.message
-//     });
-//   }
-// };
-
-
-
-
-
-
-
-
-// exports.createApplication = async (req, res) => {
-//   try {
-//     const {
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn
-//     } = req.body;
-
-//     const file = req.file;
-
-//     if (!file) {
-//       return res.status(400).json({ error: "Resume file is required" });
-//     }
-
-//     // Save resume info to resume table
-//     const resumeData = {
-//       user_id: req.user.id,
-//       orginal_filename: file.originalname,
-//       file_extension: path.extname(file.originalname),
-//       attachment_path: file.path
-//     };
-
-//     const resumeId = await resumeModel.insertResume(resumeData);
-
-//     // Check for duplicate application
-//     const alreadyApplied = await applicationModel.checkExistingApplication(
-//       req.user.id,
-//       internship_id
-//     );
-//     if (alreadyApplied) {
-//       return res.status(409).json({
-//         error: "You've already applied to this internship"
-//       });
-//     }
-
-//     // Now create application with resumeId
-//     const applicationId = await applicationModel.createApplication({
-//       user_id: req.user.id,
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn,
-//       resume_id: resumeId
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       applicationId,
-//       message: "Application submitted successfully"
-//     });
-
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       error: error.message
-//     });
-//   }
-// };
-
-
-
-// exports.createApplication = async (req, res) => {
-//   try {
-//     const {
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn,
-//       resume_id
-//     } = req.body;
-
-//     // Validate fields
-//     const errors = validateApplication(req.body);
-//     if (Object.keys(errors).length > 0) {
-//       return res.status(400).json({ errors });
-//     }
-
-//     // Check for duplicate application
-//     const alreadyApplied = await applicationModel.checkExistingApplication(
-//       req.user.id,
-//       internship_id
-//     );
-//     if (alreadyApplied) {
-//       return res.status(409).json({
-//         error: "You've already applied to this internship"
-//       });
-//     }
-
-//     const applicationId = await applicationModel.createApplication({
-//       user_id: req.user.id,
-//       internship_id,
-//       university,
-//       degree,
-//       graduation_year,
-//       linkdIn,
-//       resume_id
-//     });
-
-//     res.status(201).json({
-//       success: true,
-//       applicationId,
-//       message: "Application submitted successfully"
-//     });
-
-//   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       error: error.message
-//     });
-//   }
-// };
-
 exports.getUserApplications = async (req, res) => {
   try {
     const applications = await applicationModel.getApplicationsByUser(req.user.id);
@@ -351,6 +151,7 @@ exports.deleteApplication = async (req, res) => {
     });
   }
 },
+
 exports.getSingleApplication = async (req, res) => {
   const { id } = req.params; // application ID
   try {
@@ -363,3 +164,44 @@ exports.getSingleApplication = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// meron's
+// Change status (by admin)
+exports.changeApplicationStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {}; // ⚠️ This line throws error if req.body is undefined
+
+    if (!status) {
+      return res.status(400).json({ error: "Status is required" });
+    }
+
+    await applicationModel.updateStatus(id, status);
+
+    res.status(200).json({ success: true, message: "Status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+// exports.changeApplicationStatus = async (req, res) => {
+//   try {
+//     const { status } = req.body;
+//     const applicationId = req.params.id;
+
+//     const validStatuses = ["pending", "accepted", "rejected"];
+//     if (!validStatuses.includes(status)) {
+//       return res.status(400).json({ error: "Invalid status value" });
+//     }
+//     if(!applicationId){
+//         return res.status(400).json({error:"application not found"})
+//     }
+
+//     await Application.updateStatus(applicationId, status);
+//     res.json({ message: "Application status updated successfully" });
+//   } catch (err) {
+//     res.status(500).json({ error: err.message });
+//   }
+// };
