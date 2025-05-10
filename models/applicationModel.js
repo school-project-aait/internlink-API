@@ -164,6 +164,35 @@ module.exports = {
       });
     });
   },
+  
+// In applicationModel.js
+getAllApplications: () => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT 
+        a.*, 
+        i.title AS internship_title,
+        i.description AS internship_description,
+        i.deadline,
+        c.name AS company_name,
+        u.name AS student_name,
+        r.attachment_path,   
+        r.orginal_filename AS resume_filename,  
+        r.file_extension AS resume_extension
+      FROM applications a
+      JOIN internships i ON a.internship_id = i.internship_id
+      JOIN companies c ON i.company_id = c.company_id
+      JOIN users u ON a.user_id = u.id
+      JOIN resume r ON a.resume_id = r.resume_id  
+      ORDER BY a.applied_at DESC
+    `;
+    db.query(sql, (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
+    });
+  });
+}
+
 
 }
 

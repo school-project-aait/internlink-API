@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const path = require("path");
 require("dotenv").config();
 
 // Import routes
@@ -19,7 +20,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/internships", internshipRoutes);
 app.use("/api/applications", applicationRoutes);
- 
+//  expose uploads folder to the public
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
  
 // Test endpoint

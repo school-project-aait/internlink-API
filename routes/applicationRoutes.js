@@ -6,7 +6,7 @@ const upload = require('../middlewares/upload');
 const authorize = require('../middlewares/authorize');
 // Student application endpoints
 // router.post('/', authenticate, applicationController.createApplication);
-router.get('/', authenticate, applicationController.getUserApplications);
+router.get('/', authenticate,authorize('admin'), applicationController.getAllApplications);
 router.put('/:id', authenticate, applicationController.updateApplication);
 router.delete('/:id', authenticate, applicationController.deleteApplication);
 router.get('/:id', authenticate, applicationController.getSingleApplication);
