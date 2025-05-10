@@ -9,8 +9,8 @@ exports.updateUser = async (req, res) => {
       updates.password_hash = await bcrypt.hash(updates.password, 10);
       delete updates.password;
     }
-    // delete updates.role;
-    // delete updates.email;
+    delete updates.role;
+    delete updates.email;
 
     const result = await userModel.updateUser(req.params.id, updates);
     if (result.affectedRows === 0) {
