@@ -184,6 +184,21 @@ exports.changeApplicationStatus = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.getAllApplications = async (req, res) => {
+  try {
+    const applications = await applicationModel.getAllApplications();
+    res.json({
+      success: true,
+      data: applications
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 
 
 // exports.changeApplicationStatus = async (req, res) => {
