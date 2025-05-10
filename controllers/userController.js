@@ -9,6 +9,8 @@ exports.updateUser = async (req, res) => {
       updates.password_hash = await bcrypt.hash(updates.password, 10);
       delete updates.password;
     }
+    // delete updates.role;
+    // delete updates.email;
 
     const result = await userModel.updateUser(req.params.id, updates);
     if (result.affectedRows === 0) {
@@ -60,7 +62,7 @@ exports.deleteUser = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const user = await userModel.getUserById(req.user.id); // assuming JWT token sets userId
+    const user = await userModel.findUserById(req.user.id); // assuming JWT token sets userId
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
