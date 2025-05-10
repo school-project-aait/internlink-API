@@ -13,8 +13,6 @@ const applicationRoutes = require("./routes/applicationRoutes");
 // Middleware
 app.use(cors());
 app.use(express.json());
- 
-
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -23,7 +21,6 @@ app.use("/api/applications", applicationRoutes);
 //  expose uploads folder to the public
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
- 
 // Test endpoint
 app.get("/", (req, res) => {
   res.send("🎉 Backend is working!");
