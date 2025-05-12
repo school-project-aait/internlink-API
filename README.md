@@ -64,7 +64,8 @@ Role-based access ensures that only admins can manage listings, and only student
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/school-project-aait/InternLink-Frontend.git
+   git clone https://github.com/school-project-aait/internlink-API.git
+  
 
 
  
